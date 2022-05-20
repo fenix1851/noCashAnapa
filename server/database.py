@@ -24,41 +24,75 @@ class BaseModel(Model):
 
 class Users(BaseModel):
     
-    phone = TextField(null=False, unique=True)
-    phone_ver = BooleanField(default=False)
-    type = TextField(null=False)
+    phone = TextField(null=False, unique=True) # Номер телефона
     
-    coins = IntegerField(null=False)
+    phone_ver = BooleanField(default=False) # Проверен?
+    
+    type = TextField(null=False) # Тип пользователя
+    
+    coins = IntegerField(null=False) # Кол-во монеток
+    
+    avatar = BlobField()
+    
+    online = BooleanField(default=False)
+    
+    
+class Beaches(BaseModel):
+    
+    name = TextField(unique=True) # Название пляжа
     
 class Shops(BaseModel):
     
-    shop_id = TextField(null=False, unique=True)
-    shop_name = TextField(default="Название магазина")
-    owner:Users = ForeignKeyField(Users)
+    shop_id = TextField(null=False, unique=True) # Айди магазина
+    
+    shop_name = TextField(default="Название магазина") # Название магазина
+    
+    owner:Users = ForeignKeyField(Users) # Владелец, ссылка на Пользователя
+    
+    beach:Beaches = ForeignKeyField(Beaches) # Пляж, ссылка на Пляжи
+    
     
 class Goods(BaseModel):
-    good_id = IntegerField(null=False, unique=True)
-
-    shop:Shops = ForeignKeyField(Shops)
-    name = TextField(null=False)
-    cost = IntegerField(null=False)
+    
+    good_id = IntegerField(null=False, unique=True) # Айди товара
+    
+    shop:Shops = ForeignKeyField(Shops) # Магазин, ссылка на магазин
+    
+    name = TextField(null=False) # Наименование товара 
+    
+    cost = IntegerField(null=False) # Стоимость за 1 единицу товара
+    
     
 class Sells(BaseModel):
-    sell_id = IntegerField(null=False, unique=True)
     
-    buyer = ForeignKeyField(Users)
-    seller = ForeignKeyField(Users)
-    good = ForeignKeyField(Goods)
+    sell_id = IntegerField(null=False, unique=True) # Айди покупки
     
-    count = IntegerField(default=1)
+    buyer = ForeignKeyField(Users) # Покупатель, ссылка на Пользователи
+    
+    seller = ForeignKeyField(Users) # Продавец, ссылка на Пользователи
+    
+    good = ForeignKeyField(Goods) # Товар, ссылка на Товары
+    
+    count = IntegerField(default=1) # Кол-во купленных товаров
 
-class Categories(BaseModel):
-    category = TextField(null=False, unique=True)
+class Categories(BaseModel): 
+    
+    category = TextField(null=False, unique=True) # Категории, Еда, Шлёпанцы, Услуги и тд
     
 class Bills(BaseModel):
-    bill_id = IntegerField(null=False, unique=True)
-    bill= TextField()
-    is_payed = BooleanField(default=False)
-    user = ForeignKeyField(Users)
-    status = TextField(default="created")
-    coins = IntegerField()
+    
+    bill_id = IntegerField(null=False, unique=True) # Айди пополнения (в системе noCash)
+    
+    bill= TextField() # Айди в системе Qiwi
+    
+    is_payed = BooleanField(default=False) # Оплачен?
+    
+    user = ForeignKeyField(Users) # Пользователь, который пополняет, ссылка на Пользователи
+    
+    status = TextField(default="created") # Статус пополнения 
+    
+    coins = IntegerField() # Кол-во пополняемых монет
+    
+
+
+    

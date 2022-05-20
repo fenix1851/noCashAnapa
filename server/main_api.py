@@ -80,6 +80,25 @@ async def createbill(phone, coins):
     else:
         return {"success": False, "message": "User not exist"}
     
+@app.get("/api/v1/getsellers")
+async def getsellers(phone):        
+    
+    user:database.Users = database.Users.select().where((database.Users.phone == phone)).first()
+    
+    if user:
+        
+        sellers = database.Users.select().where((database.Users.type == "seller") &
+                                                (database.Users.phone_ver == True))
+        
+        if sellers:
+            return {"success": True, "sellers": [{"phone_number": x.phone, "is_active": x.online} for x in sellers]}
+        
+        else:
+            return {"success": False, "message": "Not have any sellers in system"}
+        
+    else:
+        return {"success": False, "message": "User not registered"}
 
+    
 if __name__ == '__main__':
     uvicorn.run("main_api:app", port=8080, host='45.8.230.89', reload=True)
