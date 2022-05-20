@@ -34,7 +34,6 @@ class Users(BaseModel):
     
     avatar = BlobField()
     
-    online = BooleanField(default=False)
     
     
 class Beaches(BaseModel):
@@ -51,6 +50,7 @@ class Shops(BaseModel):
     
     beach:Beaches = ForeignKeyField(Beaches) # Пляж, ссылка на Пляжи
     
+    online = BooleanField(default=False)
     
 class Goods(BaseModel):
     

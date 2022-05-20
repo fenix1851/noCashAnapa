@@ -80,23 +80,40 @@ async def createbill(phone, coins):
     else:
         return {"success": False, "message": "User not exist"}
     
-@app.get("/api/v1/getsellers")
-async def getsellers(phone):        
+@app.get("/api/v1/getshops")
+async def getshops(userphone, active, beach):        
     
-    user:database.Users = database.Users.select().where((database.Users.phone == phone)).first()
+    user:database.Users = database.Users.select().where((database.Users.phone == userphone)).first()
     
     if user:
         
-        sellers = database.Users.select().where((database.Users.type == "seller") &
-                                                (database.Users.phone_ver == True))
+        if not beach in [ x.name for x in database.Beaches.select() ].append("all"): return {"success": False, "message": "Incorrect beach name!"}
         
-        if sellers:
-            return {"success": True, "sellers": [{"phone_number": x.phone, "is_active": x.online} for x in sellers]}
         
+        if active == "online":
+             
+            shops = database.Shops.select().where( (database.Shops.online == True) )
+        
+        elif active == "offline":
+            
+            shops = database.Shops.select().where( (database.Shops.online == False) )
+        
+        elif active == "all":
+            
+            shops = database.Shops.select()
+
+        else:
+            return {"success": False, "message": "Incorrect status! \"online\", \"offline\", \"all\""}
+        
+        
+        if shops:
+            return {"success": True, "sellers": [{"shop_name": x.shop_name, "owner": x.owner} for x in shops]}
+
         else:
             return {"success": False, "message": "Not have any sellers in system"}
         
     else:
+        
         return {"success": False, "message": "User not registered"}
 
     
