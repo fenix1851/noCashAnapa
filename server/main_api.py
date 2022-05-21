@@ -1,4 +1,5 @@
 
+from typing import List
 import database, uvicorn
 import base64
 from time import sleep
@@ -224,10 +225,16 @@ async def GetAllHotelsByBeach(beach_ids):
     hotels = database.Hotels.select()
     
     if hotels and beaches:
-        needed_hotels = [z for z in [database.Hotels.select().where( ( database.Hotels.beach == x ) ) for x in beach_ids]]
+        needed_hotels = [database.Hotels.select().where( ( database.Hotels.beach == x ) ) for x in beach_ids]
+        nneeded_hotels = []
+        for hotels in needed_hotels:
+            for hotel in hotels:
+                nneeded_hotels.append(hotel)
+    
+        print(nneeded_hotels)
         
-        print(needed_hotels)
-        return "Hello World"
+        return {"success": True, "result": [{"hotel_id": hotel.hotel_id, "name": hotel.name, "owner": hotel.owner, "rating": hotel.rating, "beach": hotel.beach, "photobase64": base64.b64encode(open(hotel.photopath, "rb").read()) 
+} for hotel in nneeded_hotels]}
     else:
         return {"success": False, "message": "beaches or hotels doesn't exist"}
 

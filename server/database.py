@@ -1,7 +1,7 @@
 
 from peewee import *
 from playhouse.postgres_ext import PostgresqlExtDatabase
-
+import random
 
 try:
     db = PostgresqlDatabase(
@@ -52,7 +52,7 @@ class Hotels(BaseModel):
     
     owner = ForeignKeyField(Users, null=True)
     
-    rating = FloatField(default=0.0)
+    rating = FloatField(default=)
     
     photopath = TextField()
     
