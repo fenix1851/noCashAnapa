@@ -29,9 +29,11 @@ class Users(BaseModel):
     
     phone_ver = BooleanField(default=False) # Проверен?
     
+    fio = TextField(null=False)
+    
     type = TextField(null=False) # Тип пользователя
     
-    coins = IntegerField(null=False) # Кол-во монеток
+    coins = IntegerField(default=0) # Кол-во монеток
     
     avatar = BlobField(null=True)
     
@@ -44,6 +46,8 @@ class Beaches(BaseModel):
     
     yandex_url = TextField(null=True)
 
+
+
 class Hotels(BaseModel):
     
     hotel_id = IntegerField(primary_key=True)
@@ -52,7 +56,7 @@ class Hotels(BaseModel):
     
     owner = ForeignKeyField(Users, null=True)
     
-    rating = FloatField(default=)
+    rating = FloatField(default=random.uniform(0.0, 5.0))
     
     photopath = TextField()
     

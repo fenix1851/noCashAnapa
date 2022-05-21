@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from threading import Thread
 from pyqiwip2p import QiwiP2P
 from fastapi.middleware.cors import CORSMiddleware
-
+#from prostor-smsjson import JsonGate
 
 
 # public = 48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iP5N1DQm9kcmd3NvtYcZ9wywCrbeF1WBxJyfTTTChotpMQR59ZgEDdBTbAf3hCV4nqpAw1KDYdH8kAW7Vrpsc4EwSucRqgXNdyMo9CLKSDt
@@ -25,8 +25,25 @@ app.add_middleware(
 @app.get("/api/v1/getuser")
 async def getuser(phone):
     user = database.Users.select().where( (database.Users.phone == phone) ).first()
-    return {"success": True, "result": {"phone": phone, "phone_ver": user.phone_ver, "type": user.type, "coins": user.coins}}
+    if user:
+        return {"success": True, "result": {"phone": phone, "phone_ver": user.phone_ver, "type": user.type, "coins": user.coins}}
     
+    else:
+        return {"success": False}
+
+@app.get("/api/v1/registerPhone")
+async def registershop(phonenumber, fio):
+    if database.Users.select().where( (database.Users.phone == phonenumber) ).first():
+        return {"success": False, "message": "User already registered"}
+    
+    else:
+        newUser = database.Users.create(phone = phonenumber, phone_ver = True, type="client", fio = fio)
+        newUser.save()
+        
+        return {"success": True}
+        
+        
+ 
 @app.get("/api/v1/checkbalance")
 async def checkbalance(phone):
     
@@ -94,6 +111,8 @@ async def createbill(phone, coins):
         return {"success": False, "message": "User not exist"}
     
 
+
+
 @app.get("/api/v1/getmarketplaceinfo")
 async def getmarketplaceinfo(marketplace_id):
     
@@ -114,6 +133,25 @@ async def getmarketplaceinfo(marketplace_id):
     else:
         return {"success": False, "message": "mp not exists"}
 
+@app.get("/api/v1/registermp")
+async def registermp(phonenumber, hotel_id):
+    user = database.Users.select().where( (database.Users.phone == phonenumber) ).first()
+    hotel = database.Hotels.select().where( (database.Hotels.hotel_id == hotel_id) ).first()
+    if user and hotel:
+        beach = database.Beaches.select().where( (database.Beaches.beach_id == hotel.beach_id) ).first()
+        
+        if not database.MarketPlaces.select(): nshop = database.MarketPlaces.create( marketplace_id = 0, beach = beach, owner = user, hotel = hotel)
+        
+        else: nshop = database.MarketPlaces.create( marketplace_id = database.MarketPlaces.select().order_by(-database.MarketPlaces.marketplace_id).first().shop_id+1, beach = beach, owner = user, hotel = hotel)
+        
+        nshop.save()
+        
+        return {"success": True, "message": ""}
+        
+    else:
+        return {"success": False, "message": "This user OR hotel not exist"}
+
+
 
 @app.get("/api/v1/getshopinfo")
 async def getshopinfo(shop_id):
@@ -127,7 +165,6 @@ async def getshopinfo(shop_id):
     
     else:
         return {"success": False, "message": "shop not exists"}
-
 
 @app.get("/api/v1/getallshops")
 async def getallshops(active, beach):        
@@ -182,6 +219,30 @@ async def getallshops(active, beach):
         
         return {"success": False, "message": "Not have any sellers in system"}
     
+@app.get("/api/v1/registershop")
+async def registershop(phonenumber, shop_name, beach_id):
+    user = database.Users.select().where( (database.Users.phone == phonenumber) ).first()
+    beach = database.Beaches.select().where( (database.Beaches.beach_id == beach_id) ).first()
+    
+    if user and beach:
+        if user.type == "Seller":
+            if not database.Shops.select(): nshop = database.Shops.create( shop_id = 0, shop_name = shop_name, beach = beach)
+            
+            else: nshop = database.Shops.create( shop_id = database.Shops.select().order_by(-database.Shops.shop_id).first().shop_id+1, shop_name = shop_name, beach = beach)
+            
+            nshop.save()
+            
+        
+            return {"success": True, "shop_id": nshop.shop_id}
+        else:
+            return {"success": False, "message": "This user doesn't have any permissions"}
+    
+    else:
+        return {"success": False, "message": "This user OR beach not exist"}
+
+    
+    
+    
 @app.get("/api/v1/getallgoods")
 async def getallgoods(marketplace_id):        
     
@@ -207,6 +268,22 @@ async def getallgoods(marketplace_id):
     else:
         return {"success": False, "message": "Marketplace has not exist"}
     
+@app.get("/api/v1/getgoodbyid")
+async def getgoodbyid(good_id):
+    good = database.Goods.select().where( ( database.Goods.good_id == good_id ) ).first()
+    if good:
+        return {"success": True, "result": {"name": good.name, "description": good.description, 
+                                               "cost": good.cost, "category": good.category, "shop_id": good.shop,
+                                               "imagebase64": open(good.pathfile, mode="rb")}}
+    
+    else:
+        return {"success": False, "message": "This good not exists"}
+
+@app.get("/api/v1/getcategories")
+async def getcategories(): return {"success": True, "resultat": [{"id": z.id, "name": z.name} for z in database.Categories.select()]}
+
+
+
 
 @app.get("/api/v1/getallbeaches")
 async def getallbeaches():        
@@ -217,7 +294,7 @@ async def getallbeaches():
     else:
         return {"success": False, "message": "beaches don't exist"}
     
-    
+
 @app.get("/api/v1/GetAllHotelsByBeach")
 async def GetAllHotelsByBeach(beach_ids):
     beach_ids = [int(x) for x in beach_ids.split(";")]       
@@ -233,66 +310,17 @@ async def GetAllHotelsByBeach(beach_ids):
     
         print(nneeded_hotels)
         
-        return {"success": True, "result": [{"hotel_id": hotel.hotel_id, "name": hotel.name, "owner": hotel.owner, "rating": hotel.rating, "beach": hotel.beach, "photobase64": base64.b64encode(open(hotel.photopath, "rb").read()) 
-} for hotel in nneeded_hotels]}
+        return {"success": True, "result": [{"hotel_id": hotel.hotel_id, "name": hotel.name, "owner": hotel.owner, "rating": hotel.rating, "beach": hotel.beach } for hotel in nneeded_hotels]}  #, "photobase64": base64.b64encode(open(hotel.photopath, "rb").read())
     else:
         return {"success": False, "message": "beaches or hotels doesn't exist"}
 
-@app.get("/api/v1/getcategories")
-async def getcategories(): return {"success": True, "resultat": [{"id": z.id, "name": z.name} for z in database.Categories.select()]}
 
 
-@app.get("/api/v1/getgoodbyid")
-async def getgoodbyid(good_id):
-    good = database.Goods.select().where( ( database.Goods.good_id == good_id ) ).first()
-    if good:
-        return {"success": True, "result": {"name": good.name, "description": good.description, 
-                                               "cost": good.cost, "category": good.category, "shop_id": good.shop,
-                                               "imagebase64": open(good.pathfile, mode="rb")}}
-    
-    else:
-        return {"success": False, "message": "This good not exists"}
 
-@app.get("/api/v1/registermp")
-async def registermp(phonenumber, hotel_id):
-    user = database.Users.select().where( (database.Users.phone == phonenumber) ).first()
-    hotel = database.Hotels.select().where( (database.Hotels.hotel_id == hotel_id) ).first()
-    if user and hotel:
-        beach = database.Beaches.select().where( (database.Beaches.beach_id == hotel.beach_id) ).first()
-        
-        if not database.MarketPlaces.select(): nshop = database.MarketPlaces.create( marketplace_id = 0, beach = beach, owner = user, hotel = hotel)
-        
-        else: nshop = database.MarketPlaces.create( marketplace_id = database.MarketPlaces.select().order_by(-database.MarketPlaces.marketplace_id).first().shop_id+1, beach = beach, owner = user, hotel = hotel)
-        
-        nshop.save()
-        
-        return {"success": True, "message": ""}
-        
-    else:
-        return {"success": False, "message": "This user OR hotel not exist"}
 
-@app.get("/api/v1/registershop")
-async def registershop(phonenumber, shop_name, beach_id):
-    user = database.Users.select().where( (database.Users.phone == phonenumber) ).first()
-    beach = database.Beaches.select().where( (database.Beaches.beach_id == beach_id) ).first()
-    
-    if user and beach:
-        if user.type == "Seller":
-            if not database.Shops.select(): nshop = database.Shops.create( shop_id = 0, shop_name = shop_name, beach = beach)
-            
-            else: nshop = database.Shops.create( shop_id = database.Shops.select().order_by(-database.Shops.shop_id).first().shop_id+1, shop_name = shop_name, beach = beach)
-            
-            nshop.save()
-            
-        
-            return {"success": True, "shop_id": nshop.shop_id}
-        else:
-            return {"success": False, "message": "This user doesn't have any permissions"}
-    
-    else:
-        return {"success": False, "message": "This user OR beach not exist"}
 
-   
+
+        
 def startCheckBills():
     unpaidedbills = database.Bills.select().where( (database.Bills.status == "waited") )
 
