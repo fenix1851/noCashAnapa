@@ -55,20 +55,6 @@ export default function BeachList({ navigation }) {
   const [active, setActive] = React.useState("");
   //const [state, setState] = useState('1')
   //console.log(global.phone)
-  axios
-    .get(`http://45.8.230.89:8080/api/v1/getuser?phone=${global.phone}`)
-    .then((responce) => {
-      console.log();
-      if (!responce.data.success) {
-        axios
-          .get(
-            `http://45.8.230.89:8080/api/v1/registerPhone?phonenumber=${global.phone}`
-          )
-          .then((responce) => {
-            console.log(responce.data.success);
-          });
-      }
-    });
 
   const [items, setList] = React.useState(DATA);
 
