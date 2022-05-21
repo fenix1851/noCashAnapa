@@ -62,7 +62,7 @@ async def createbill(phone, coins):
     if user:
         
         bills = database.Bills.select()
-        a = qiwi_api.bill(amount=coins, lifetime=60, comment="!ВЫБРАТЬ ТЕКСТ ВЫБРАТЬ!")
+        a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU"})
         
         if not bills:
             new_bill = database.Bills.create(bill_id = 1, bill = a.bill_id, user=user, coins=coins)
