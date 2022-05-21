@@ -1,8 +1,7 @@
-from unicodedata import category
+
 from peewee import *
 from playhouse.postgres_ext import PostgresqlExtDatabase
 
-#lol
 
 try:
     db = PostgresqlDatabase(
@@ -61,7 +60,7 @@ class Hotels(BaseModel):
 
 class Shops(BaseModel):
     
-    shop_id = TextField(null=False, primary_key=True) # Айди магазина
+    shop_id = IntegerField(null=False, primary_key=True) # Айди магазина
     
     shop_name = TextField(default="Название магазина") # Название магазина
     
@@ -99,11 +98,14 @@ class Categories(BaseModel):
     id = IntegerField(primary_key=True)
     
     name = TextField(null=False)
+    
 class Goods(BaseModel):
     
     good_id = IntegerField(null=False, primary_key=True) # Айди товара
     
     shop:Shops = ForeignKeyField(Shops, null=True) # Магазин, ссылка на магазин
+    
+    description = TextField(null=True)
     
     name = TextField(null=False) # Наименование товара 
     
@@ -111,6 +113,7 @@ class Goods(BaseModel):
     
     category = ForeignKeyField(Categories)
     
+    pathfile = TextField()
     
 class Sells(BaseModel):
     

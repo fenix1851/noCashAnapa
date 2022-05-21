@@ -1,6 +1,8 @@
 import os
 from shutil import copy
 import shutil
+
+from random import randint
 from need_massives import *
 from database import *
 
@@ -18,9 +20,15 @@ for table in [ Categories, Users, Beaches, Hotels,  Shops, MarketPlaces, Allowed
     table:Users
     table.create_table() 
     
+for index, roles in enumerate(["Client", "Client", "Client", "Client", "Client", 
+                               "Seller", "Seller", "Seller", "Seller", "Seller", 
+                               "OwnerMP", "OwnerMP", "OwnerMP", "OwnerMP", "OwnerMP",
+                               "LifeSafer", "LifeSafer", "LifeSafer", "LifeSafer", "LifeSafer", 
+                               "Admin", "Admin", "Admin", "Admin", "Admin" ]):
     
-test = Users.create(phone="1", phone_ver=True, type="Buyer", coins=5000)
-test.save()
+    u = Users.create(phone = str(index), phone_ver = True, type = roles, coins = randint(0, 5000))
+    u.save()
+    
 
 for index, cat_name in enumerate(["На мангале", "Фрукты", "Овощи", "Фаст-фуд", "Напитки", "Сладости"]):
     a = Categories.create(id=index, name=cat_name)
@@ -31,8 +39,8 @@ os.mkdir("./assets/pictures/hotels/")
 
 for index, hotel_data in enumerate( os.listdir("./assets/pictures/raw_hotels") ):
     
-    hotel_obj = {"beach_name": hotel_data.split("_")[1], "name": hotel_data.split("_")[0], "yandex_url": ""}
-    path_to = "./assets/pictures/hotels/" + str(index) + "." + hotel_data.split(".")[1]
+    hotel_obj = {"beach_name": hotel_data.split(".")[0].split("_")[1], "name": hotel_data.split("_")[0], "yandex_url": ""}
+    path_to = "./assets/pictures/hotels/" + str(index) + "." + hotel_data.split(".")[-1]
     
     copy("./assets/pictures/raw_hotels/" + hotel_data, path_to)
     
@@ -64,14 +72,14 @@ for index, food_data in enumerate( os.listdir("./assets/pictures/raw_food") ):
     
     
     food_obj = {"beach_name": food_data.split("_")[1], "name": food_data.split("_")[0], "yandex_url": "", "category": category}
-    path_to = "./assets/pictures/goods/" + str(index) + "." + food_data.split(".")[1]
+    path_to = "./assets/pictures/goods/" + str(index) + "." + food_data.split(".")[-1]
     
     
     if not Goods.select():
-        nb = Goods.create(good_id = index, name = food_obj["name"], cost = 100, category = category)
+        nb = Goods.create(good_id = index, name = food_obj["name"], cost = 100, category = category, pathfile = path_to, description = food_data.split(".")[0].split("_")[2])
     
     else:
-        nb = Goods.create(good_id = Goods.select().order_by(-Goods.good_id).first().good_id+1, name = food_obj["name"], cost = 100, category = category)
+        nb = Goods.create(good_id = Goods.select().order_by(-Goods.good_id).first().good_id+1, name = food_obj["name"], cost = 100, category = category, pathfile = path_to, description = food_data.split(".")[0].split("_")[2])
     
     nb.save()
     
