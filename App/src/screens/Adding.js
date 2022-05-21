@@ -80,8 +80,8 @@ export default function Adding({ navigation }) {
                 )
                 .then((responce) => {
                   console.log(responce.data);
-                  //Linking.openURL(responce.data.url);
-                  WebBrowser.openBrowserAsync(responce.data.url);
+                  Linking.openURL(responce.data.url);
+                  //WebBrowser.openBrowserAsync(responce.data.url);
                 });
               //return navigation.navigate("");
             } else {
