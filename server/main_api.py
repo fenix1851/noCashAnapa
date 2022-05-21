@@ -13,7 +13,7 @@ from pyqiwip2p import QiwiP2P
 qiwi_api = QiwiP2P(auth_key="eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6IjZhOGtxay0wMCIsInVzZXJfaWQiOiI3OTUyOTg3MjIwNyIsInNlY3JldCI6IjgzMzdkMzJjNjg5ZjNiYWRlYmExZjMyZWQ3MjE3YmNlOGVkOTliN2ViMmEyZTM3ZjgzNTNkMzE3MWU5ZmVhZGIifX0=")
 
 app = FastAPI()
-    
+
 @app.get("/api/v1/checkbalance")
 async def checkbalance(phone):
     
@@ -86,36 +86,114 @@ async def getshops(userphone, active, beach):
     user:database.Users = database.Users.select().where((database.Users.phone == userphone)).first()
     
     if user:
+        if not database.Beaches.select():
+            return {"success": False, "message": "No-one beach registered"}
         
-        if not beach in [ x.name for x in database.Beaches.select() ].append("all"): return {"success": False, "message": "Incorrect beach name!"}
+        if not database.Shops.select():
+            return {"success": False, "message": "No-one shop registered"}
         
-        
-        if active == "online":
-             
-            shops = database.Shops.select().where( (database.Shops.online == True) )
-        
-        elif active == "offline":
-            
-            shops = database.Shops.select().where( (database.Shops.online == False) )
-        
-        elif active == "all":
-            
-            shops = database.Shops.select()
-
-        else:
+        if not active in ["online", "offline", "all"]:
             return {"success": False, "message": "Incorrect status! \"online\", \"offline\", \"all\""}
+        
+        if not beach in [str(x.beach_id) for x in database.Beaches.select()].append("all"):
+            return {"success": False, "message": "Incorrect beach name!"}
+        
+        
+        if beach == "all":
+            if active == "online":
+                
+                shops = database.Shops.select().where( (database.Shops.online == True) )
+
+            elif active == "offline":
+
+                shops = database.Shops.select().where( (database.Shops.online == False) )
+
+            else:
+
+                shops = database.Shops.select()
+        
+        elif database.Beaches.select().where(( database.Beaches.beach_id == int(beach) )):
+            if active == "online":
+                
+                shops = database.Shops.select().where( (database.Shops.online == True) &
+                                                       (database.Shops.beach == int(beach)))
+            
+            elif active == "offline":
+                
+                shops = database.Shops.select().where( (database.Shops.online == False) &
+                                                       (database.Shops.beach == int(beach) ))
+            
+            else:
+                
+                shops = database.Shops.select((database.Shops.beach == int(beach)))
         
         
         if shops:
+            
             return {"success": True, "sellers": [{"shop_name": x.shop_name, "owner": x.owner} for x in shops]}
 
         else:
+            
             return {"success": False, "message": "Not have any sellers in system"}
         
     else:
         
         return {"success": False, "message": "User not registered"}
-
     
+@app.get("/api/v1/getgoods")
+async def getgoods(marketplace_id):        
+    
+    marketplace = database.Select().where((database.MarketPlace.marketplace_id == marketplace_id)).first()
+    if marketplace:
+        
+        allowed_shops_in_marketplace = database.Select().where((database.AllowedMarkets.marketplace == marketplace))
+        all_goods = [[good for good in database.Goods.select().where( (database.Goods.shop == shop) )] for shop in allowed_shops_in_marketplace]
+        marketplace_goods = database.Goods.select().where((database.Shops.shop_id == -int(marketplace)))
+        
+        if marketplace_goods:
+            all_goods += marketplace_goods 
+        
+        print(all_goods)
+        
+        return {"success": True}
+    else:
+        return {"success": False, "message": "Marketplace has not exist"}
+    
+
+@app.get("/api/v1/getbeaches")
+async def getbeaches():        
+    beaches = database.Beaches.select()
+    if beaches:
+        return {"success": True, "result": [{"id": beach.beach_id, "name": beach.name, "yandex": beach.yandex_url} for beach in beaches]}
+
+    else:
+        return {"success": False, "message": "beaches don't exist"}
+    
+    
+@app.get("/api/v1/gethotels")
+async def gethotels(beach_id):        
+    beaches = database.Beaches.select()
+    hotels = database.Hotels.select()
+    
+    if hotels and beaches:
+        beach = database.Beaches.select().where( (database.Beaches.beach_id == beach_id) ).first()
+        if beach:
+            hotels = database.Hotels.select().where( (database.Hotels.beach == beach) ).first()
+            if hotels:
+                return {"success": True, "result": [{"id": hotel.hotel_id, "name": hotel.name, "owner": hotel.owner, "rating": hotel.rating, "photo": hotel.photo, "beach_id": hotel.beach} for hotel in hotels]}
+            
+            else:
+                return {"success": False, "message": "On current beach no exist hotels"}
+            
+        else:
+            return {"success": False, "message": "Current beach don't exist"}
+        
+    else:
+        return {"success": False, "message": "beaches or hotels doesn't exist"}
+
+def startCheckBills():
+    unpaidedbills = database.Bills.select()
+
+
 if __name__ == '__main__':
     uvicorn.run("main_api:app", port=8080, host='45.8.230.89', reload=True)

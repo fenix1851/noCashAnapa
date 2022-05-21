@@ -1,6 +1,8 @@
-
+from unicodedata import category
 from peewee import *
 from playhouse.postgres_ext import PostgresqlExtDatabase
+
+#lol
 
 try:
     db = PostgresqlDatabase(
@@ -24,7 +26,7 @@ class BaseModel(Model):
 
 class Users(BaseModel):
     
-    phone = TextField(null=False, unique=True) # Номер телефона
+    phone = TextField(null=False, primary_key=True) # Номер телефона
     
     phone_ver = BooleanField(default=False) # Проверен?
     
@@ -32,17 +34,34 @@ class Users(BaseModel):
     
     coins = IntegerField(null=False) # Кол-во монеток
     
-    avatar = BlobField()
-    
+    avatar = BlobField(null=True)
     
     
 class Beaches(BaseModel):
     
-    name = TextField(unique=True) # Название пляжа
+    beach_id = IntegerField(primary_key=True)
     
+    name = TextField(null=False) # Название пляжа
+    
+    yandex_url = TextField(null=True)
+
+class Hotels(BaseModel):
+    
+    hotel_id = IntegerField(primary_key=True)
+    
+    name = TextField()
+    
+    owner = ForeignKeyField(Users, null=True)
+    
+    rating = FloatField(default=0.0)
+    
+    photopath = TextField()
+    
+    beach = ForeignKeyField(Beaches)
+
 class Shops(BaseModel):
     
-    shop_id = TextField(null=False, unique=True) # Айди магазина
+    shop_id = TextField(null=False, primary_key=True) # Айди магазина
     
     shop_name = TextField(default="Название магазина") # Название магазина
     
@@ -52,20 +71,50 @@ class Shops(BaseModel):
     
     online = BooleanField(default=False)
     
+    coordinates = TextField(null=True)
+    
+
+class MarketPlaces(BaseModel):
+    
+    marketplace_id = IntegerField(primary_key=True)
+    
+    beach = ForeignKeyField(Beaches)
+    
+    owner = ForeignKeyField(Users)
+    
+    hotel = ForeignKeyField(Hotels)
+    
+class AllowedMarkets(BaseModel):
+    
+    allow_id = IntegerField(primary_key=True)
+    
+    marketplace = ForeignKeyField(MarketPlaces)
+    
+    shop = ForeignKeyField(Shops)
+    
+    is_allow = BooleanField(default=False)
+    
+class Categories(BaseModel): 
+    
+    id = IntegerField(primary_key=True)
+    
+    name = TextField(null=False)
 class Goods(BaseModel):
     
-    good_id = IntegerField(null=False, unique=True) # Айди товара
+    good_id = IntegerField(null=False, primary_key=True) # Айди товара
     
-    shop:Shops = ForeignKeyField(Shops) # Магазин, ссылка на магазин
+    shop:Shops = ForeignKeyField(Shops, null=True) # Магазин, ссылка на магазин
     
     name = TextField(null=False) # Наименование товара 
     
     cost = IntegerField(null=False) # Стоимость за 1 единицу товара
     
+    category = ForeignKeyField(Categories)
+    
     
 class Sells(BaseModel):
     
-    sell_id = IntegerField(null=False, unique=True) # Айди покупки
+    sell_id = IntegerField(null=False, primary_key=True) # Айди покупки
     
     buyer = ForeignKeyField(Users) # Покупатель, ссылка на Пользователи
     
@@ -75,15 +124,12 @@ class Sells(BaseModel):
     
     count = IntegerField(default=1) # Кол-во купленных товаров
 
-class Categories(BaseModel): 
-    
-    category = TextField(null=False, unique=True) # Категории, Еда, Шлёпанцы, Услуги и тд
     
 class Bills(BaseModel):
     
-    bill_id = IntegerField(null=False, unique=True) # Айди пополнения (в системе noCash)
+    bill_id = IntegerField(null=False, primary_key=True) # Айди пополнения (в системе noCash)
     
-    bill= TextField() # Айди в системе Qiwi
+    bill = TextField() # Айди в системе Qiwi
     
     is_payed = BooleanField(default=False) # Оплачен?
     
@@ -93,6 +139,4 @@ class Bills(BaseModel):
     
     coins = IntegerField() # Кол-во пополняемых монет
     
-
-
     
