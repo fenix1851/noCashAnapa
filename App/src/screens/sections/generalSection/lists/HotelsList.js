@@ -83,7 +83,7 @@ export default function HotelList({ navigation }) {
 
   const _handleSearch = () => console.log("Searching");
 
-  const _handleMore = () => console.log("Shown more");
+  const _handleMore = () => navigation.openDrawer();
 
   const Item = ({ item }) => (
     <View>
@@ -135,10 +135,10 @@ export default function HotelList({ navigation }) {
           style={{ backgroundColor: "#2F80ED", paddingBottom: 38 }}
           statusBarHeight={38}
         >
+          <Appbar.Action icon="menu" onPress={_handleMore} />
           <Appbar.BackAction onPress={() => navigation.navigate("BeachList")} />
           <Appbar.Content title="Выберите отель" />
           <Appbar.Action icon="magnify" onPress={_handleSearch} />
-          <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
         </Appbar.Header>
 
         <View

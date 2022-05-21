@@ -11,6 +11,8 @@ import ButtonStyle from "../../../../components/Button";
 
 export default function Phone({ navigation }) {
   const [phone, setPhone] = React.useState("");
+  const [name, setName] = React.useState("");
+
   const [visible, setVisible] = React.useState(false);
 
    const showDialog = () => setVisible(true);
@@ -22,37 +24,53 @@ export default function Phone({ navigation }) {
     <PaperProvider>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>Нужно ввести номер!</Dialog.Title>
+          <Dialog.Title>Ошибка!</Dialog.Title>
           <Dialog.Content>
-            <Paragraph>Введите номер телефона</Paragraph>
+            <Paragraph>Заполните поля</Paragraph>
           </Dialog.Content>
           <Dialog.Actions>
-            <ButtonStyle handler={hideDialog} width={120} height={30} onPress={hideDialog} title="OK"></ButtonStyle>
+            <ButtonStyle
+              handler={hideDialog}
+              width={120}
+              height={30}
+              onPress={hideDialog}
+              title="OK"
+            ></ButtonStyle>
           </Dialog.Actions>
         </Dialog>
       </Portal>
       <View style={styles.container}>
         <HeadlineStyle title="Авторизация" />
         <Paragraph style={styles.text}>
-          Введите ваш номер телефона для авторизации в приложении
+          Введите номер и имя дл авторизации
         </Paragraph>
         <TextInput
-          style={styles.phoneInput}
+          style={[styles.phoneInput, { marginBottom: 31 }]}
           activeUnderlineColor="#2F80ED"
-          placeholder="+ 7 000 00 00 000"
+          placeholder="+ 7 999 12 34 567"
           value={phone}
           onChangeText={(phone) => setPhone(phone)}
         />
+
+        <TextInput
+          style={[styles.phoneInput, { marginBottom: 62 }]}
+          activeUnderlineColor="#2F80ED"
+          placeholder="Иван"
+          value={name}
+          onChangeText={(name) => setName(name)}
+        />
+
         <ButtonStyle
           height={50}
           width={195}
           title="Войти"
           handler={() => {
-            if (phone) {
+            if (phone && name) {
               global.phone = phone;
-              return navigation.navigate("BeachList");
+              global.name = name
+              return navigation.navigate("Home");
             } else {
-              showDialog()
+              showDialog();
             }
           }}
         />
@@ -83,6 +101,5 @@ const styles = StyleSheet.create({
   phoneInput: {
     height: 54,
     width: 344,
-    marginBottom: 62,
   },
 });

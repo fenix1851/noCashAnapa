@@ -1,6 +1,0 @@
-peewee
-uvicorn
-fastapi
-psycopg2
-pyqiwip2p
-prostor-smsjson
