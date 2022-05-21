@@ -29,7 +29,7 @@ class Users(BaseModel):
     
     phone_ver = BooleanField(default=False) # Проверен?
     
-    fio = TextField(null=False)
+    fio = TextField(default="Иванов Иван Иванович")
     
     type = TextField(null=False) # Тип пользователя
     

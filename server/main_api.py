@@ -110,7 +110,26 @@ async def createbill(phone, coins):
     else:
         return {"success": False, "message": "User not exist"}
     
-
+    
+@app.get("/api/v1/transfer")
+async def transfer(phone_from, phone_to, coins):
+    user_from = database.Users.select().where( ( database.Users.phone == phone_from ) ).first()
+    user_to = database.Users.select().where(  ( database.Users.phone == phone_to ) ).first() 
+    
+    if user_from and user_to:
+     
+        if user_from.coins >= coins:
+            user_from.coins -= coins
+            user_to.coins += coins
+            user_from.save()
+            user_to.save()
+            return {"success": True}
+        
+        else:
+            return {"success": False, "message": "user from doesn't have need coins"}
+            
+    else:
+        return {"success": False, "message": "user_from or user_to not exists"}
 
 
 @app.get("/api/v1/getmarketplaceinfo")
