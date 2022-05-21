@@ -12,7 +12,11 @@ export default function SliderScreenSeven({navigation}) {
       <View style={styles.container}>
         <View style={styles.header}>
           <Headline style={styles.headline}>Анапка</Headline>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Phone");
+            }}
+          >
             <Text style={styles.href}>Пропустить</Text>
           </TouchableOpacity>
         </View>
@@ -36,9 +40,13 @@ export default function SliderScreenSeven({navigation}) {
                 <Badge size={12} style={[styles.disactiveDot, styles.dot]} />
                 <Badge size={12} style={[styles.activeDot, styles.dot]} />
               </View>
-              <Button onPress={()=>{
-                navigation.navigate('Phone')
-              }} style={styles.button} mode="contained">
+              <Button
+                onPress={() => {
+                  navigation.navigate("Phone");
+                }}
+                style={styles.button}
+                mode="contained"
+              >
                 Далее
               </Button>
             </View>

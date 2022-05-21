@@ -13,7 +13,11 @@ export default function SliderScreenTwo({navigation}) {
       <View style={styles.container}>
         <View style={styles.header}>
           <Headline style={styles.headline}>Анапка</Headline>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Phone");
+            }}
+          >
             <Text style={styles.href}>Пропустить</Text>
           </TouchableOpacity>
         </View>

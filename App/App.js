@@ -17,6 +17,13 @@ import Code from "./src/screens/sections/startSection/auth/code";
 import BeachList from "./src/screens/sections/generalSection/lists/BeachList";
 import HotelsList from "./src/screens/sections/generalSection/lists/HotelsList";
 
+import Menu from './src/screens/Menu';
+
+import Adding from './src/screens/Adding';
+
+import General from './src/screens/sections/generalSection/GeneralScreen'; 
+import Home from './src/screens/sections/generalSection/home';
+
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -32,6 +39,8 @@ export default function App() {
     return <Splash />;
   }
 
+
+  
   const Stack = createNativeStackNavigator()
   return (
     <NavigationContainer>
@@ -45,6 +54,13 @@ export default function App() {
         <Stack.Screen name="SliderScreenSeven" component={SliderScreenSeven} />
         <Stack.Screen name="Phone" component={Phone} />
         <Stack.Screen name="Code" component={Code} />
+        
+        <Stack.Screen name="Menu" component={Menu} />
+
+        <Stack.Screen name="Home" component={Home} />
+
+        <Stack.Screen name="Adding" component={Adding} />
+
         <Stack.Screen name="BeachList" component={BeachList} />
         <Stack.Screen name="HotelsList" component={HotelsList} />
       </Stack.Navigator>
