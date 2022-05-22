@@ -353,4 +353,4 @@ async def staffLogin(phone, passw_md5):
 
 
 if __name__ == '__main__':
-    uvicorn.run("main_api:app", port=8080, host='45.8.230.89', reload=True, timeout_keep_alive=0)
+    uvicorn.run("main_api:app", port=8080, host='localhost', reload=True, timeout_keep_alive=0)
