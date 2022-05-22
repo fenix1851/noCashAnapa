@@ -1,51 +1,104 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
-import { BarCodeScanner } from "expo-barcode-scanner";
+import { StatusBar } from "expo-status-bar";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  Button,
+  Image,
+} from "react-native";
+import { useEffect, useRef, useState } from "react";
 import { Camera } from "expo-camera";
+import { shareAsync } from "expo-sharing";
+import * as MediaLibrary from "expo-media-library";
 
 export default function App() {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
+  let cameraRef = useRef();
+  const [hasCameraPermission, setHasCameraPermission] = useState();
+  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
+  const [photo, setPhoto] = useState();
 
   useEffect(() => {
     (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === "granted");
+      const cameraPermission = await Camera.requestCameraPermissionsAsync();
+      const mediaLibraryPermission =
+        await MediaLibrary.requestPermissionsAsync();
+      setHasCameraPermission(cameraPermission.status === "granted");
+      setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  if (hasCameraPermission === undefined) {
+    return <Text>Requesting permissions...</Text>;
+  } else if (!hasCameraPermission) {
+    return (
+      <Text>
+        Permission for camera not granted. Please change this in settings.
+      </Text>
+    );
+  }
+
+  let takePic = async () => {
+    let options = {
+      quality: 1,
+      base64: true,
+      exif: false,
+    };
+
+    let newPhoto = await cameraRef.current.takePictureAsync(options);
+    setPhoto(newPhoto);
   };
 
-  if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+  if (photo) {
+    let sharePic = () => {
+      shareAsync(photo.uri).then(() => {
+        setPhoto(undefined);
+      });
+    };
+
+    let savePhoto = () => {
+      MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
+        setPhoto(undefined);
+      });
+    };
+
+    return (
+      <SafeAreaView style={styles.container}>
+        <Image
+          style={styles.preview}
+          source={{ uri: "data:image/jpg;base64," + photo.base64 }}
+        />
+        <Button title="Share" onPress={sharePic} />
+        {hasMediaLibraryPermission ? (
+          <Button title="Save" onPress={savePhoto} />
+        ) : undefined}
+        <Button title="Discard" onPress={() => setPhoto(undefined)} />
+      </SafeAreaView>
+    );
   }
 
   return (
-    <View style={styles.container}>
-      <Camera
-        style={StyleSheet.absoluteFillObject}
-        onBarCodeScanned={console.log}
-        barCodeScannerSettings={{
-          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-        }}
-      />
-      {scanned && (
-        <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
-      )}
-    </View>
+    <Camera style={styles.container} ref={cameraRef}>
+      <View style={styles.buttonContainer}>
+        <Button title="Take Pic" onPress={takePic} />
+      </View>
+      <StatusBar style="auto" />
+    </Camera>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "column",
+    alignItems: "center",
     justifyContent: "center",
+  },
+  buttonContainer: {
+    backgroundColor: "#fff",
+    alignSelf: "flex-end",
+  },
+  preview: {
+    alignSelf: "stretch",
+    flex: 1,
   },
 });
