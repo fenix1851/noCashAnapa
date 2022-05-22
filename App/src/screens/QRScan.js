@@ -30,7 +30,8 @@ export default function App({navigation}) {
 
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  console.log('123213')
+
+
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -67,7 +68,9 @@ export default function App({navigation}) {
                 handler={() => {
                   console.log(coins)
                   if (coins) {
-                    axios.get("");
+                    axios.get(
+                      `https://9e2e-5-23-54-55.eu.ngrok.io/api/v1/transfer/?phone_from=${global.phone}&phone_to=${global.to}&coins=${coins}`
+                    ).catch;
 
                     hideDialog();
                     navigation.navigate('Menu');                  }
@@ -83,6 +86,8 @@ export default function App({navigation}) {
         <Camera
           style={StyleSheet.absoluteFillObject}
           onBarCodeScanned={(context) => {
+            console.log(context.data)
+            global.to = context.data
             setVisible(true);
           }}
           barCodeScannerSettings={{

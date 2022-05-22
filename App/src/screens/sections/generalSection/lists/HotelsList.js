@@ -33,15 +33,16 @@ import ButtonStyle from "../../../../components/Button";
 const DATA = [];
 console.log(global.ids)
 
-axios.get("http://${global.api_ip}/api/v1/getallbeaches").then((responce) => {
-  //console.log(responce.data.result)
-  for (let beach of responce.data.result) {
-    beach["checked"] = false;
-    DATA.push(beach);
-  }
-  //setList(DATA)
-  
-});
+axios
+  .get("https://9e2e-5-23-54-55.eu.ngrok.io/api/v1/getallbeaches")
+  .then((responce) => {
+    //console.log(responce.data.result)
+    for (let beach of responce.data.result) {
+      beach["checked"] = false;
+      DATA.push(beach);
+    }
+    //setList(DATA)
+  });
 export default function HotelList({ navigation }) {
   //const [state, setState] = useState('1')
   console.log(global.ids)

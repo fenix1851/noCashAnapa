@@ -76,7 +76,7 @@ export default function Adding({ navigation }) {
             if (coins) {
               axios
                 .get(
-                  `http://${global.api_ip}/api/v1/supp?phone=${global.phone}&coins=${coins}&ref=http://5.23.54.55:19006/${global.phone}/${global.name}`
+                  `https://9e2e-5-23-54-55.eu.ngrok.io/api/v1/supp?phone=${global.phone}&coins=${coins}&ref=http://5.23.54.55:19006/${global.phone}/${global.name}`
                 )
                 .then((responce) => {
                   console.log(responce.data);

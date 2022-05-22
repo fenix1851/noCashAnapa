@@ -42,14 +42,16 @@ const DATA = [];
 import "../../../../../gobal";
 
 
-axios.get("http://${global.api_ip}/api/v1/getallbeaches").then((responce) => {
-  console.log(responce.data.result)
-  for (let beach of responce.data.result) {
-    beach["checked"] = false;
-    DATA.push(beach);
-  }
-  //setList(DATA);
-});
+axios
+  .get("https://9e2e-5-23-54-55.eu.ngrok.io/api/v1/getallbeaches")
+  .then((responce) => {
+    console.log(responce.data.result);
+    for (let beach of responce.data.result) {
+      beach["checked"] = false;
+      DATA.push(beach);
+    }
+    //setList(DATA);
+  });
 '79996458767'
 export default function BeachList({ navigation }) {
   const [active, setActive] = React.useState("");

@@ -21,13 +21,15 @@ import "../../../../gobal";
 export default function Home({navigation}) {
   console.log(Linking.createURL('./src/assets/Menu.js'))
   axios
-    .get(`http://${global.api_ip}/api/v1/getuser?phone=${global.phone}`)
+    .get(
+      `https://9e2e-5-23-54-55.eu.ngrok.io/api/v1/getuser?phone=${global.phone}`
+    )
     .then((responce) => {
       console.log();
       if (!responce.data.success) {
         axios
           .get(
-            `http://${global.api_ip}/api/v1/registerPhone?phonenumber=${global.phone}&fio=${global.name}`
+            `https://9e2e-5-23-54-55.eu.ngrok.io/api/v1/registerPhone?phonenumber=${global.phone}&fio=${global.name}`
           )
           .then((responce) => {
             console.log(responce.data.success);

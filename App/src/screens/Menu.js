@@ -21,23 +21,25 @@ import {
 
 import "../../gobal";
 import { TouchableOpacity } from "react-native-web";
-//${global.api_ip}/api/v1/checkbalance?phone=1
+//https://9e2e-5-23-54-55.eu.ngrok.iocheckbalance?phone=1
 
  
 
 export default function Menu({ navigation }) {
   const [balance, setBalance] = React.useState();
     axios
-      .get(`http://${global.api_ip}/api/v1/getuser?phone=${global.phone}`)
+      .get(
+        `https://9e2e-5-23-54-55.eu.ngrok.io/api/v1/getuser?phone=${global.phone}`
+      )
       .then((responce) => {
-          let balance = 0
+        let balance = 0;
         if (responce.data.success) {
           //console.log(responce.data.result.coins);
           balance = responce.data.result.coins;
         } else {
           balance = 0;
         }
-        setBalance(balance)
+        setBalance(balance);
       });
       function Element({title, handler}){
         return(
