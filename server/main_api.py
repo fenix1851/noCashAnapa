@@ -63,7 +63,7 @@ async def createbill(phone, coins, ref):
     if user:
         requests.get("https://oplata.qiwi.com/create", params={"publicKey": "48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iP5N1DQm9kcmd3NvtYcZ9wywCrbeF1WBxJyfTTTChotpMQR59ZgEDdBTbAf3hCV4nqpAw1KDYdH8kAW7Vrpsc4EwSucRqgXNdyMo9CLKSDt"
                                                                , "amount": coins, "customFields": {"themeCode": "Aleksandr-StlVun0yuU"}, 
-                                                               "successUrl": urllib.parse.urlencode(ref)})
+                                                               "successUrl": urllib.parse.quote(ref)})
         bills = database.Bills.select()
         a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU"}, comment="Пополнение количества Анапок в приложении", successUrl = ref)
         
