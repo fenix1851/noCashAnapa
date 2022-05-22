@@ -3,7 +3,6 @@ from shutil import copy
 import shutil
 
 from random import randint
-from need_massives import *
 from database import *
 
 for table in [ Bills, Categories, Sells, Goods, AllowedMarkets, MarketPlaces, Shops, Hotels, Beaches, Users ]:
