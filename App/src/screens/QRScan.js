@@ -1,65 +1,40 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Text, View, StyleSheet } from "react-native";
-import Constants from "expo-constants";
-import { Camera } from "expo-camera";
-
-// You can import from local files
-
-// or any pure javascript modules available in npm
-import { Card } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { Camera, CameraType } from "expo-camera";
 
 export default function App() {
-  useEffect((f) => {
-    (async (f) => {
-      try {
-        const hasCam = await Camera.isAvailableAsync().catch(
-          (e) => `Error: ${e.message}`
-        );
-        const cameras = await Camera.getAvailableCameraTypesAsync().catch(
-          (e) => `Error: ${e.message}`
-        );
-        const permissions = await Camera.getPermissionsAsync().catch(
-          (e) => `Error: ${e.message}`
-        );
+  const [hasPermission, setHasPermission] = useState(null);
+  const [type, setType] = useState(CameraType.back);
 
-        console.log(
-          "Device has cam: ",
-          hasCam,
-          cameras,
-          " permissions :",
-          permissions
-        );
-
-        if (!permissions.granted) {
-          console.log("No permissions yet, asking");
-          const newPermissions = await Camera.requestPermissionsAsync();
-          console.log("Result: ", newPermissions);
-        }
-      } catch (e) {
-        console.log("Permissions error: ", e);
-      }
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === "granted");
     })();
-  });
+  }, []);
 
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
   return (
     <View style={styles.container}>
-      <Text style={styles.paragraph}>
-        Change code in the editor and watch it change on your phone! Save to get
-        a shareable url.
-      </Text>
-      <Card>
-        <Camera
-          ratio="16:9"
-          autofocus={Camera.Constants.AutoFocus.on}
-          style={{
-            width: 500,
-            height: 500,
-            maxWidth: "100%",
-            borderWidth: 10,
-            borderColor: "red",
-          }}
-        />
-      </Card>
+      <Camera style={styles.camera} type={type}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setType(
+                type === CameraType.back ? CameraType.front : CameraType.back
+              );
+            }}
+          >
+            <Text style={styles.text}> Flip </Text>
+          </TouchableOpacity>
+        </View>
+      </Camera>
     </View>
   );
 }
@@ -67,15 +42,23 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    paddingTop: Constants.statusBarHeight,
-    backgroundColor: "#ecf0f1",
-    padding: 8,
   },
-  paragraph: {
-    margin: 24,
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    margin: 20,
+  },
+  button: {
+    flex: 0.1,
+    alignSelf: "flex-end",
+    alignItems: "center",
+  },
+  text: {
     fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+    color: "white",
   },
 });
