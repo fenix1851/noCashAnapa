@@ -8,7 +8,7 @@ from threading import Thread
 from pyqiwip2p import QiwiP2P
 from fastapi.middleware.cors import CORSMiddleware
 #from prostor-smsjson import JsonGate
-a
+
 
 # public = 48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iP5N1DQm9kcmd3NvtYcZ9wywCrbeF1WBxJyfTTTChotpMQR59ZgEDdBTbAf3hCV4nqpAw1KDYdH8kAW7Vrpsc4EwSucRqgXNdyMo9CLKSDt
 # secret = eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6IjZhOGtxay0wMCIsInVzZXJfaWQiOiI3OTUyOTg3MjIwNyIsInNlY3JldCI6IjgzMzdkMzJjNjg5ZjNiYWRlYmExZjMyZWQ3MjE3YmNlOGVkOTliN2ViMmEyZTM3ZjgzNTNkMzE3MWU5ZmVhZGIifX0=
@@ -62,7 +62,7 @@ async def createbill(phone, coins):
     if user:
         
         bills = database.Bills.select()
-        a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU"})
+        a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU"}, comment="Пополнение количества Анапок в приложении")
         
         if not bills:
             new_bill = database.Bills.create(bill_id = 1, bill = a.bill_id, user=user, coins=coins)
