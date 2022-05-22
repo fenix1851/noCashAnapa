@@ -1,7 +1,8 @@
 
 from typing import List
-import database, uvicorn
-import base64
+from urllib.parse import urlencode
+import database, uvicorn, requests
+import urllib.parse
 from time import sleep
 from fastapi import FastAPI
 from threading import Thread
@@ -60,9 +61,11 @@ async def createbill(phone, coins, ref):
     user:database.Users = database.Users.select().where((database.Users.phone == phone)).first()
     
     if user:
-        
+        requests.get("https://oplata.qiwi.com/create", params={"publicKey": "48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iP5N1DQm9kcmd3NvtYcZ9wywCrbeF1WBxJyfTTTChotpMQR59ZgEDdBTbAf3hCV4nqpAw1KDYdH8kAW7Vrpsc4EwSucRqgXNdyMo9CLKSDt"
+                                                               , "amount": coins, "customFields": {"themeCode": "Aleksandr-StlVun0yuU"}, 
+                                                               "successUrl": urllib.parse.urlencode(ref)})
         bills = database.Bills.select()
-        a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU", "successUrl": ref}, comment="Пополнение количества Анапок в приложении")
+        a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU"}, comment="Пополнение количества Анапок в приложении", successUrl = ref)
         
         if not bills:
             new_bill = database.Bills.create(bill_id = 1, bill = a.bill_id, user=user, coins=coins)
