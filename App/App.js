@@ -24,6 +24,7 @@ import Adding from './src/screens/Adding';
 import General from './src/screens/sections/generalSection/GeneralScreen'; 
 import Home from './src/screens/sections/generalSection/home';
 
+import QRGener from './src/screens/QRGener';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -61,6 +62,8 @@ export default function App() {
         <Stack.Screen name="Home" component={Home} />
 
         <Stack.Screen name="Adding" component={Adding} />
+
+        <Stack.Screen name="QRgener" component={QRGener} />
 
         <Stack.Screen name="BeachList" component={BeachList} />
         <Stack.Screen name="HotelsList" component={HotelsList} />
