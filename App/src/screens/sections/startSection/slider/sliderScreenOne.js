@@ -19,9 +19,10 @@ export default function SliderScreenOne({navigation}) {
       //console.log(url.split('/'))
       const splittedUrl = url.split('/')
       if (splittedUrl.length > 4) {
-        global.name = splittedUrl[splittedUrl.length - 1];
+        global.name = decodeURI(splittedUrl[splittedUrl.length - 1]);
         global.phone = splittedUrl[splittedUrl.length - 2];
         setNew(false)
+        
       }
     })
   console.log(isNew)
