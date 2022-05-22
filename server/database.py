@@ -3,6 +3,8 @@ from peewee import *
 from playhouse.postgres_ext import PostgresqlExtDatabase
 import random
 
+from requests import request
+
 try:
     db = PostgresqlDatabase(
         database="anapa",
@@ -36,6 +38,8 @@ class Users(BaseModel):
     coins = IntegerField(default=0) # Кол-во монеток
     
     avatar = BlobField(null=True)
+    
+    staff_pass = TextField(null=True)
     
     
 class Beaches(BaseModel):
@@ -145,5 +149,14 @@ class Bills(BaseModel):
     status = TextField(default="created") # Статус пополнения 
     
     coins = IntegerField() # Кол-во пополняемых монет
+
+class Requests_of_help(BaseModel):
     
+    request_id = IntegerField(null=False, primary_key=True)
+    
+    requestor = ForeignKeyField(Users)
+    
+    timestamp = IntegerField(null=False, primary_key=False)
+    
+    coordinates = TextField()
     
