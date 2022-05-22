@@ -1,4 +1,4 @@
 global.ids=""
-phone=""
-name=""
+phone="79996386079"
+name="Иван"
 balance=""
