@@ -39,7 +39,7 @@ export default function Menu({ navigation }) {
         }
         setBalance(balance)
       });
-      function Element({title}){
+      function Element({title, handler}){
         return(
         <View
           style={{
@@ -49,7 +49,7 @@ export default function Menu({ navigation }) {
             paddingBottom: 17,
           }}
         >
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handler}>
             <Text style={{ fontSize: 12 }}>{title}</Text>
           </TouchableOpacity>
         </View>
@@ -100,7 +100,7 @@ export default function Menu({ navigation }) {
             style={{ marginRight: 24 }}
             source={require("../assets/avatar.svg")}
           />
-          <Text style={{ fontSize: 24 }}>{global.name}</Text>
+          <Text style={{ fontSize: 24, textTransform: 'capitalize'}}>{global.name}</Text>
         </View>
         <Divider style={{ width: "99%" }} />
         <View
@@ -130,7 +130,7 @@ export default function Menu({ navigation }) {
         </View>
         <Divider style={{ width: "99%" }} />
 
-        <Element title="QR-код" />
+        <Element title="QR-код" handler={()=>{navigation.navigate('QRGener')}}/>
         <Divider style={{ width: "99%" }} />
 
         <Element title="SOS" />
