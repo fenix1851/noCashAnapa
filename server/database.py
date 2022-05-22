@@ -153,3 +153,10 @@ class Bills(BaseModel):
 class Requests_of_help(BaseModel):
     
     request_id = IntegerField(null=False, primary_key=True)
+    
+    requestor = ForeignKeyField(Users)
+    
+    timestamp = IntegerField(null=False, primary_key=False)
+    
+    coordinates = TextField()
+    
