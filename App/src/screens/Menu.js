@@ -69,6 +69,12 @@ export default function Menu({ navigation }) {
           backgroundColor: "#fff",
         }}
       >
+        <Button
+          icon="arrow-left"
+          color="#2F80ED"
+          style={{ position: "absolute", top: 22, left: 10 }}
+          onPress={()=>{navigation.goBack()}}
+        />
         <Headline
           style={{
             fontFamily: "Montserrat_700Bold",
@@ -117,7 +123,7 @@ export default function Menu({ navigation }) {
             mode="contained"
             color="#fff"
             labelStyle={{ fontSize: 12, color: "#2F80ED" }}
-            onPress={()=>navigation.navigate('Adding')}
+            onPress={() => navigation.navigate("Adding")}
           >
             Пополнить
           </Button>

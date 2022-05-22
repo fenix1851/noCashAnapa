@@ -42,6 +42,8 @@ export default function App() {
 
   
   const Stack = createNativeStackNavigator()
+
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -54,9 +56,8 @@ export default function App() {
         <Stack.Screen name="SliderScreenSeven" component={SliderScreenSeven} />
         <Stack.Screen name="Phone" component={Phone} />
         <Stack.Screen name="Code" component={Code} />
-        
-        <Stack.Screen name="Menu" component={Menu} />
 
+        <Stack.Screen name="Menu" component={Menu} />
         <Stack.Screen name="Home" component={Home} />
 
         <Stack.Screen name="Adding" component={Adding} />

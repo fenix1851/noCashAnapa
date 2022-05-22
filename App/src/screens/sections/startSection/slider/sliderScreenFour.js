@@ -75,11 +75,11 @@ const styles = StyleSheet.create({
   },
   container: {
     height: "100%",
-    paddingTop: 60,
+    paddingTop: 30,
     backgroundColor: "#fff",
   },
   image: {
-    marginTop: 85,
+    marginTop: 45,
     width: 392,
     height: 392,
   },
@@ -87,17 +87,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bottom: {
-    marginTop: 97,
+    marginTop: 40,
     paddingRight: 20,
     paddingLeft: 20,
-    justifyContent: "space-between",
-    height: 202,
+    justifyContent: 'space-between',
+    height: 202
   },
   bottomNav: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 35,
+    marginTop: 25,
   },
   dotGroup: {
     flexDirection: "row",
