@@ -1,6 +1,3 @@
-
-from typing import List
-from urllib.parse import urlencode
 import database, uvicorn, requests
 import urllib.parse
 from time import sleep
@@ -8,7 +5,6 @@ from fastapi import FastAPI
 from threading import Thread
 from pyqiwip2p import QiwiP2P
 from fastapi.middleware.cors import CORSMiddleware
-#from prostor-smsjson import JsonGate
 
 
 # public = 48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iP5N1DQm9kcmd3NvtYcZ9wywCrbeF1WBxJyfTTTChotpMQR59ZgEDdBTbAf3hCV4nqpAw1KDYdH8kAW7Vrpsc4EwSucRqgXNdyMo9CLKSDt
@@ -19,9 +15,12 @@ qiwi_api = QiwiP2P(auth_key="eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGF
 app = FastAPI()
 
 app.add_middleware(
-        CORSMiddleware,
-        allow_origins=['*']
-    )
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/api/v1/getuser")
 async def getuser(phone):
@@ -61,17 +60,19 @@ async def createbill(phone, coins, ref):
     user:database.Users = database.Users.select().where((database.Users.phone == phone)).first()
     
     if user:
-        requests.get("https://oplata.qiwi.com/create", params={"publicKey": "48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iP5N1DQm9kcmd3NvtYcZ9wywCrbeF1WBxJyfTTTChotpMQR59ZgEDdBTbAf3hCV4nqpAw1KDYdH8kAW7Vrpsc4EwSucRqgXNdyMo9CLKSDt"
+        lol = requests.get("https://oplata.qiwi.com/create", params={"publicKey": "48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iP5N1DQm9kcmd3NvtYcZ9wywCrbeF1WBxJyfTTTChotpMQR59ZgEDdBTbAf3hCV4nqpAw1KDYdH8kAW7Vrpsc4EwSucRqgXNdyMo9CLKSDt"
                                                                , "amount": coins, "customFields": {"themeCode": "Aleksandr-StlVun0yuU"}, 
                                                                "successUrl": urllib.parse.quote(ref)})
-        bills = database.Bills.select()
-        a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU"}, comment="Пополнение количества Анапок в приложении", successUrl = ref)
         
+        print(lol.content)
+        #bills = database.Bills.select()
+        #a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU"}, comment="Пополнение количества Анапок в приложении", successUrl = ref)
+        return {"success": False, "message": "ZDI SUKA"}
         if not bills:
-            new_bill = database.Bills.create(bill_id = 1, bill = a.bill_id, user=user, coins=coins)
+            new_bill = database.Bills.create(bill_id = 1, bill = lol, user=user, coins=coins)
         else:
             new_bill_id = database.Bills.select().order_by(-database.Bills.bill_id).first().bill_id+1
-            new_bill = database.Bills.create(bill_id = new_bill_id, bill = a.bill_id, user=user, coins=coins)
+            new_bill = database.Bills.create(bill_id = new_bill_id, bill = lol, user=user, coins=coins)
 
         new_bill.save()
         # Проверка на пополнение
@@ -350,10 +351,6 @@ async def staffLogin(phone, passw_md5):
 
 
 
-        
-def startCheckBills():
-    unpaidedbills = database.Bills.select().where( (database.Bills.status == "waited") )
-
 
 if __name__ == '__main__':
-    uvicorn.run("main_api:app", port=8080, host='45.8.230.89', reload=True)
+    uvicorn.run("main_api:app", port=8080, host='45.8.230.89', reload=True, timeout_keep_alive=0)
