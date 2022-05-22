@@ -120,7 +120,7 @@ export default function QRGener({ navigation }) {
         >
           Покажите этот код другому человеку, чтобы он перевел вам деньги
         </Paragraph>
-        <Button mode="contained" color="#2F80ED" style={{ marginTop: 40, width: 280, height: 60, alignItems: 'center', justifyContent: 'center' }} labelStyle={{fontSize:20, letterSpacing: 1.25}}>
+        <Button onPress={()=>{navigation.navigate('QRScaner')}} mode="contained" color="#2F80ED" style={{ marginTop: 40, width: 280, height: 60, alignItems: 'center', justifyContent: 'center' }} labelStyle={{fontSize:20, letterSpacing: 1.25}}>
           Сканировать
         </Button>
       </View>

@@ -21,14 +21,14 @@ import {
 
 import "../../gobal";
 import { TouchableOpacity } from "react-native-web";
-//45.8.230.89:8080/api/v1/checkbalance?phone=1
+//${global.api_ip}/api/v1/checkbalance?phone=1
 
  
 
 export default function Menu({ navigation }) {
   const [balance, setBalance] = React.useState();
     axios
-      .get(`http://45.8.230.89:8080/api/v1/getuser?phone=${global.phone}`)
+      .get(`http://${global.api_ip}/api/v1/getuser?phone=${global.phone}`)
       .then((responce) => {
           let balance = 0
         if (responce.data.success) {
