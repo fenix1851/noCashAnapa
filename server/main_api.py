@@ -56,13 +56,13 @@ async def checkbalance(phone):
         return {"success": False, "message": "User not registered"}
     
 @app.get("/api/v1/supp")
-async def createbill(phone, coins):
+async def createbill(phone, coins, ref):
     user:database.Users = database.Users.select().where((database.Users.phone == phone)).first()
     
     if user:
         
         bills = database.Bills.select()
-        a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU"}, comment="Пополнение количества Анапок в приложении")
+        a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU", "successUrl": ref}, comment="Пополнение количества Анапок в приложении")
         
         if not bills:
             new_bill = database.Bills.create(bill_id = 1, bill = a.bill_id, user=user, coins=coins)
@@ -109,8 +109,7 @@ async def createbill(phone, coins):
     
     else:
         return {"success": False, "message": "User not exist"}
-    
-    
+      
 @app.get("/api/v1/transfer")
 async def transfer(phone_from, phone_to, coins):
     user_from = database.Users.select().where( ( database.Users.phone == phone_from ) ).first()
@@ -334,7 +333,16 @@ async def GetAllHotelsByBeach(beach_ids):
         return {"success": False, "message": "beaches or hotels doesn't exist"}
 
 
-
+@app.get("/api/v1/staff/login")
+async def staffLogin(phone, passw_md5):
+    user = database.Users.select().where( ( database.Users.phone == phone ) &
+                                          ( database.Users.staff_pass == passw_md5 ) )
+    
+    if user:
+        return {"success": True}
+    
+    else:
+        return {"success": False, "message": "something incorrect"}
 
 
 
