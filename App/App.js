@@ -49,8 +49,6 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="QRScaner" component={QRScaner} />
-
         <Stack.Screen name="SliderScreenOne" component={SliderScreenOne} />
         <Stack.Screen name="SliderScreenTwo" component={SliderScreenTwo} />
         <Stack.Screen name="SliderScreenThree" component={SliderScreenThree} />
@@ -67,6 +65,7 @@ export default function App() {
         <Stack.Screen name="Adding" component={Adding} />
 
         <Stack.Screen name="QRGener" component={QRGener} />
+        <Stack.Screen name="QRScaner" component={QRScaner} />
 
         <Stack.Screen name="BeachList" component={BeachList} />
         <Stack.Screen name="HotelsList" component={HotelsList} />

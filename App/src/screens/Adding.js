@@ -76,7 +76,7 @@ export default function Adding({ navigation }) {
             if (coins) {
               axios
                 .get(
-                  `http://45.8.230.89:8080/api/v1/supp?phone=${global.phone}&coins=${coins}&ref=http://5.23.54.55:19006/${global.phone}/${global.name}`
+                  `http://${global.api_ip}/api/v1/supp?phone=${global.phone}&coins=${coins}&ref=http://5.23.54.55:19006/${global.phone}/${global.name}`
                 )
                 .then((responce) => {
                   console.log(responce.data);

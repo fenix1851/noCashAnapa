@@ -16,18 +16,18 @@ import {
   Dialog,
 } from "react-native-paper";
 import { TouchableOpacity } from "react-native-web";
-
+import "../../../../gobal";
 
 export default function Home({navigation}) {
   console.log(Linking.createURL('./src/assets/Menu.js'))
   axios
-    .get(`http://45.8.230.89:8080/api/v1/getuser?phone=${global.phone}`)
+    .get(`http://${global.api_ip}/api/v1/getuser?phone=${global.phone}`)
     .then((responce) => {
       console.log();
       if (!responce.data.success) {
         axios
           .get(
-            `http://45.8.230.89:8080/api/v1/registerPhone?phonenumber=${global.phone}&fio=${global.name}`
+            `http://${global.api_ip}/api/v1/registerPhone?phonenumber=${global.phone}&fio=${global.name}`
           )
           .then((responce) => {
             console.log(responce.data.success);

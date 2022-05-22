@@ -33,7 +33,7 @@ import ButtonStyle from "../../../../components/Button";
 const DATA = [];
 console.log(global.ids)
 
-axios.get("http://45.8.230.89:8080/api/v1/getallbeaches").then((responce) => {
+axios.get("http://${global.api_ip}/api/v1/getallbeaches").then((responce) => {
   //console.log(responce.data.result)
   for (let beach of responce.data.result) {
     beach["checked"] = false;
