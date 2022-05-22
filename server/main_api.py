@@ -1,16 +1,13 @@
-import database, uvicorn, requests
-import urllib.parse
+
+from lib2to3.pgen2 import token
+import database, uvicorn
 from time import sleep
 from fastapi import FastAPI
 from threading import Thread
-from pyqiwip2p import QiwiP2P
 from fastapi.middleware.cors import CORSMiddleware
-
-
-# public = 48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iP5N1DQm9kcmd3NvtYcZ9wywCrbeF1WBxJyfTTTChotpMQR59ZgEDdBTbAf3hCV4nqpAw1KDYdH8kAW7Vrpsc4EwSucRqgXNdyMo9CLKSDt
-# secret = eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6IjZhOGtxay0wMCIsInVzZXJfaWQiOiI3OTUyOTg3MjIwNyIsInNlY3JldCI6IjgzMzdkMzJjNjg5ZjNiYWRlYmExZjMyZWQ3MjE3YmNlOGVkOTliN2ViMmEyZTM3ZjgzNTNkMzE3MWU5ZmVhZGIifX0=
-
-qiwi_api = QiwiP2P(auth_key="eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6IjZhOGtxay0wMCIsInVzZXJfaWQiOiI3OTUyOTg3MjIwNyIsInNlY3JldCI6IjgzMzdkMzJjNjg5ZjNiYWRlYmExZjMyZWQ3MjE3YmNlOGVkOTliN2ViMmEyZTM3ZjgzNTNkMzE3MWU5ZmVhZGIifX0=")
+import  urllib
+import http.client as httplib
+token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIwOGU0MWIzYS1kMzMzLWEzYzYtNzkyZi02YjU5MDViMGExYjMiLCJ0aWQiOiJkMzkwNWQ3ZC04OTUwLTAyNzQtNjZmZS1lM2Q3ZmQwYWVkMDEifQ.loNoWLjb7JMifdXBZEXbRL3a0VPMMjDag_FXsS3kn4E"
 
 app = FastAPI()
 
@@ -58,21 +55,24 @@ async def checkbalance(phone):
 @app.get("/api/v1/supp")
 async def createbill(phone, coins, ref):
     user:database.Users = database.Users.select().where((database.Users.phone == phone)).first()
-    
+    bills = database.Bills.select()
     if user:
-        lol = requests.get("https://oplata.qiwi.com/create", params={"publicKey": "48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iP5N1DQm9kcmd3NvtYcZ9wywCrbeF1WBxJyfTTTChotpMQR59ZgEDdBTbAf3hCV4nqpAw1KDYdH8kAW7Vrpsc4EwSucRqgXNdyMo9CLKSDt"
-                                                               , "amount": coins, "customFields": {"themeCode": "Aleksandr-StlVun0yuU"}, 
-                                                               "successUrl": urllib.parse.quote(ref)})
         
-        print(lol.content)
-        #bills = database.Bills.select()
-        #a = qiwi_api.bill(amount=coins, lifetime=60, fields={"themeCode": "Aleksandr-StlVun0yuU"}, comment="Пополнение количества Анапок в приложении", successUrl = ref)
-        return {"success": False, "message": "ZDI SUKA"}
+        headers = ["Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIwOGU0MWIzYS1kMzMzLWEzYzYtNzkyZi02YjU5MDViMGExYjMiLCJ0aWQiOiI0YjE1M2IyZS1iOGI4LTNhMDAtNDY4YS0xMzVmMzcyMTZjMDkifQ.FAdj7dR5_fZ5FwEIfq10z_hm7ZB8TrfO7UTscVA87mc"]
+        
+        params = urllib.urlencode({'wallet_to': "R10124288", 'sum': coins, 'success_url': ref})
+        headers = {"Content-type": "application/x-www-form-urlencoded",
+                    "Accept": "text/plain"}
+        conn = httplib.HTTPConnection("api.lava.ru/invoice/create")
+        conn.request("POST", "", params, headers)
+        
+        billCreate = InvoiceCreate(token, "R10124288", ref, comment="Пополнение Анапок")
+        
         if not bills:
-            new_bill = database.Bills.create(bill_id = 1, bill = lol, user=user, coins=coins)
+            new_bill = database.Bills.create(bill_id = 1, bill = billCreate["id"], user=user, coins=coins)
         else:
             new_bill_id = database.Bills.select().order_by(-database.Bills.bill_id).first().bill_id+1
-            new_bill = database.Bills.create(bill_id = new_bill_id, bill = lol, user=user, coins=coins)
+            new_bill = database.Bills.create(bill_id = new_bill_id, bill = billCreate["id"], user=user, coins=coins)
 
         new_bill.save()
         # Проверка на пополнение
@@ -81,7 +81,7 @@ async def createbill(phone, coins, ref):
             while True:
                 sleep(5)
                 
-                bill_status = qiwi_api.check(new_bill.bill).status
+                bill_status = LavaAPI.check(new_bill.bill).status
                 
                 if bill_status == "PAID":
                     good_bill:database.Bills = database.Bills.select().where((database.Bills.bill_id == new_bill.bill_id)).first()
@@ -109,7 +109,7 @@ async def createbill(phone, coins, ref):
             
         
         Thread(target=checkingBill).start()
-        return {"success": True, "message": "Bill has created", "bill": new_bill.bill, "url": a.pay_url}
+        return {"success": True, "message": "Bill has created", "bill": billCreate["id"], "url": billCreate["url"]}
     
     else:
         return {"success": False, "message": "User not exist"}
