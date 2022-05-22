@@ -1,12 +1,15 @@
 
 from lib2to3.pgen2 import token
+import urllib.parse
 import database, uvicorn
 from time import sleep
 from fastapi import FastAPI
 from threading import Thread
 from fastapi.middleware.cors import CORSMiddleware
-import  urllib
+import urllib
 import http.client as httplib
+
+import requests
 token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIwOGU0MWIzYS1kMzMzLWEzYzYtNzkyZi02YjU5MDViMGExYjMiLCJ0aWQiOiJkMzkwNWQ3ZC04OTUwLTAyNzQtNjZmZS1lM2Q3ZmQwYWVkMDEifQ.loNoWLjb7JMifdXBZEXbRL3a0VPMMjDag_FXsS3kn4E"
 
 app = FastAPI()
@@ -58,16 +61,15 @@ async def createbill(phone, coins, ref):
     bills = database.Bills.select()
     if user:
         
-        headers = ["Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIwOGU0MWIzYS1kMzMzLWEzYzYtNzkyZi02YjU5MDViMGExYjMiLCJ0aWQiOiI0YjE1M2IyZS1iOGI4LTNhMDAtNDY4YS0xMzVmMzcyMTZjMDkifQ.FAdj7dR5_fZ5FwEIfq10z_hm7ZB8TrfO7UTscVA87mc"]
-        
-        params = urllib.urlencode({'wallet_to': "R10124288", 'sum': coins, 'success_url': ref})
-        headers = {"Content-type": "application/x-www-form-urlencoded",
-                    "Accept": "text/plain"}
+        params = urllib.parse.urlencode({'wallet_to': "R10124288", 'sum': coins, 'success_url': ref})
+        headers = {"Authorization": "Basic eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIwOGU0MWIzYS1kMzMzLWEzYzYtNzkyZi02YjU5MDViMGExYjMiLCJ0aWQiOiI0YjE1M2IyZS1iOGI4LTNhMDAtNDY4YS0xMzVmMzcyMTZjMDkifQ.FAdj7dR5_fZ5FwEIfq10z_hm7ZB8TrfO7UTscVA87mc"}
         conn = httplib.HTTPConnection("api.lava.ru/invoice/create")
-        conn.request("POST", "", params, headers)
         
-        billCreate = InvoiceCreate(token, "R10124288", ref, comment="Пополнение Анапок")
+        r = requests.post("https://api.lava.ru/invoice/create", params=params, headers=headers)
         
+        
+        print(r.text )
+        return {"success": False, "message": "LOLKEK"}
         if not bills:
             new_bill = database.Bills.create(bill_id = 1, bill = billCreate["id"], user=user, coins=coins)
         else:
