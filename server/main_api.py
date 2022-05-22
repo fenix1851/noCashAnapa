@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from threading import Thread
 from pyqiwip2p import QiwiP2P
 from fastapi.middleware.cors import CORSMiddleware
+
 #from prostor-smsjson import JsonGate
 
 
@@ -18,10 +19,17 @@ qiwi_api = QiwiP2P(auth_key="eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGF
 
 app = FastAPI()
 
+origins = [
+    "*"
+]
+
 app.add_middleware(
-        CORSMiddleware,
-        allow_origins=['*']
-    )
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/api/v1/getuser")
 async def getuser(phone):
