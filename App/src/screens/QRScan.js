@@ -1,35 +1,13 @@
-import { DrawerActions } from "@react-navigation/native";
-import * as React from "react";
-import axios from "axios";
-import { StyleSheet, View, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, View, StyleSheet, Button } from "react-native";
+import { BarCodeScanner } from "expo-barcode-scanner";
+import { Camera } from "expo-camera";
 
-const QRCode = require("qrcode");
+export default function App() {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanned, setScanned] = useState(false);
 
-import "../../gobal";
-
-import * as Linking from "expo-linking";
-
-import { Provider as PaperProvider } from "react-native-paper";
-import {
-  Button,
-  Text,
-  Paragraph,
-  TextInput,
-  Portal,
-  Dialog,
-} from "react-native-paper";
-import { RCTDeviceEventEmitter } from "react-native";
-import HeadlineStyle from "../components/Headline";
-import { TouchableOpacity } from "react-native-web";
-import { ceil } from "react-native-reanimated";
-
-import {BarCodeScanner} from 'expo-barcode-scanner'
-
-export default function QRScaner({ navigation }) {
-  const [hasPermission, setHasPermission] = React.useState(null);
-  const [scanned, setScanned] = React.useState(false);
-
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === "granted");
@@ -49,21 +27,25 @@ export default function QRScaner({ navigation }) {
   }
 
   return (
-    <PaperProvider>
-      <View style={styles.container}>
-        <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={StyleSheet.absoluteFillObject}
-        />
-        {scanned && (
-          <Button
-            title={"Tap to Scan Again"}
-            onPress={() => setScanned(false)}
-          />
-        )}
-      </View>
-    </PaperProvider>
+    <View style={styles.container}>
+      <Camera
+        style={StyleSheet.absoluteFillObject}
+        onBarCodeScanned={console.log}
+        barCodeScannerSettings={{
+          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        }}
+      />
+      {scanned && (
+        <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
+      )}
+    </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+  },
+});
