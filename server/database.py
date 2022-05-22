@@ -35,7 +35,7 @@ class Users(BaseModel):
     
     type = TextField(null=False) # Тип пользователя
     
-    coins = IntegerField(default=0) # Кол-во монеток
+    coins = IntegerField(default=5000) # Кол-во монеток
     
     avatar = BlobField(null=True)
     
