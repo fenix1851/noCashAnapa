@@ -5,8 +5,29 @@ import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
 import { Headline, Text, Paragraph, Badge, Button } from "react-native-paper";
 var firstScreen = require("./SliderOne.webp");
+import "../../../../../gobal";
+
+import * as Linking from "expo-linking";
+  
+
+  
 
 export default function SliderScreenOne({navigation}) {
+  const [isNew, setNew] = React.useState(true)
+  Linking.getInitialURL()
+    .then((url) => {
+      //console.log(url.split('/'))
+      const splittedUrl = url.split('/')
+      if (splittedUrl.length > 4) {
+        global.name = splittedUrl[splittedUrl.length - 1];
+        global.phone = splittedUrl[splittedUrl.length - 2];
+        setNew(false)
+      }
+    })
+  console.log(isNew)
+  if(!isNew){
+    navigation.navigate('Menu')
+  }
 
   return (
     <PaperProvider>
@@ -72,11 +93,11 @@ const styles = StyleSheet.create({
   },
   container: {
     height: "100%",
-    paddingTop: 60,
+    paddingTop: 30,
     backgroundColor: "#fff",
   },
   image: {
-    marginTop: 85,
+    marginTop: 45,
     width: 392,
     height: 392,
   },
@@ -84,7 +105,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bottom: {
-    marginTop: 97,
+    marginTop: 40,
     paddingRight: 20,
     paddingLeft: 20,
     justifyContent: 'space-between',
@@ -94,7 +115,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 35,
+    marginTop: 25,
   },
   dotGroup: {
     flexDirection: "row",
